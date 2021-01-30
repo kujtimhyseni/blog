@@ -48,3 +48,21 @@ app.get("/blogs", async function (req, res) {
     }
 
 });
+
+app.get("/count_visitor", async function (req, res) {
+    try {
+        const blogID = req.query.blog_id
+        var dbRes = await blogDb.run(`UPDATE Blog
+                                      set visitor_count = visitor_count + 1
+                                      where id = ?`, blogID);
+        if (dbRes.changes === 0) {
+            return res.status(StatusCodes.BAD_REQUEST).json({error: "No such blog"})
+        }
+        dbRes = await blogDb.get("SELECT visitor_count from Blog where id = ?", blogID);
+        console.log(dbRes)
+        res.json(dbRes)
+    } catch (e) {
+        res.json({error: e.message})
+    }
+
+});

@@ -30,6 +30,19 @@
         "parameters": [],
         "responses": {}
       }
+    },
+    "/count_visitor": {
+      "get": {
+        "tags": [],
+        "description": "",
+        "parameters": [
+          {
+            "name": "blog_id",
+            "in": "query"
+          }
+        ],
+        "responses": {}
+      }
     }
   },
   "definitions": {}
