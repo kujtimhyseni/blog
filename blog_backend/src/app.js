@@ -106,7 +106,7 @@ app.get("/blog", async function (req, res) {
                                        from BlogTags
                                        where blog_id = ?`, blog.id)).map(row => row.tag)
 
-        blog.comments = (await blogDb.all(`SELECT author_name, author_email, content as tag
+        blog.comments = (await blogDb.all(`SELECT author_name, author_email, content
                                            from BlogComments
                                            where blog_id = ?`, blog.id))
         res.json(blog)
