@@ -71,16 +71,18 @@ app.get("/blog/search", async function (req, res) {
                                                substr(content, 1, 50) || '...'
                                            ELSE
                                                content
-                                           END                                                                                 AS content,
+                                           END                         AS content,
                                        creation_date,
                                        author,
                                        visitor_count,
-                                       (SELECT GROUP_CONCAT(BlogTags.tag_name) from BlogTags where BlogTags.blog_id = B.id) as tags
+                                       (SELECT GROUP_CONCAT(BlogTags.tag_name)
+                                        from BlogTags
+                                        where BlogTags.blog_id = B.id) as tags
 
                        from BlogTags t
                                 inner join Blog B on t.blog_id = B.id
                        where tag_name LIKE ?`
-        const blogsThatMatch = await blogDb.all(query,`%${tagToSearch}%`);
+        const blogsThatMatch = await blogDb.all(query, `%${tagToSearch}%`);
         res.json(blogsThatMatch)
     } catch (e) {
         console.log(e)
@@ -108,6 +110,28 @@ app.get("/blog", async function (req, res) {
                                            from BlogComments
                                            where blog_id = ?`, blog.id))
         res.json(blog)
+    } catch (e) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
+    }
+
+});
+
+
+app.get("/popular_tags", async function (req, res) {
+    try {
+        let limit = Number(req.query.limit)
+        if(!Number.isInteger(limit)){
+            limit = -1;
+        }
+        const query = `SELECT tag_name, count(*) as blogs_count
+                       from BlogTags
+                       group by tag_name
+                       order by blogs_count desc LIMIT ?`
+        const tags = await blogDb.all(query, limit);
+        if (tags === undefined) {
+            return res.status(StatusCodes.NOT_FOUND).json([])
+        }
+        res.json(tags)
     } catch (e) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
     }
@@ -175,7 +199,8 @@ app.post("/create_blog", async function (req, res) {
         const insertedBlogID = dbRes.lastID
 
         for (const tag of body.tags) {
-            const queryForAddingTag = `INSERT INTO BlogTags(blog_id, tag_name) VALUES (:blog_id,:tag)`
+            const queryForAddingTag = `INSERT INTO BlogTags(blog_id, tag_name)
+                                       VALUES (:blog_id, :tag)`
             await blogDb.run(queryForAddingTag, {':blog_id': insertedBlogID, ':tag': tag});
         }
         res.json({blog_id: insertedBlogID})
