@@ -57,7 +57,7 @@ app.get("/blogs", async function (req, res) {
         console.log(allBlogs)
         res.json(allBlogs)
     } catch (e) {
-        res.json({error: e.message})
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
     }
 
 });
@@ -78,7 +78,7 @@ app.get("/blog", async function (req, res) {
                                        where blog_id = ?`, blog.id)).map(row => row.tag)
         res.json(blog)
     } catch (e) {
-        res.json({error: e.message})
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
     }
 
 });
@@ -97,7 +97,21 @@ app.put("/count_visitor/blog/:blog_id", async function (req, res) {
         console.log("Returning visitor_count", dbRes.visitor_count)
         res.json(dbRes)
     } catch (e) {
-        res.json({error: e.message})
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
+    }
+
+});
+
+app.post("/add_comment/blog/:blog_id", async function (req, res) {
+    try {
+        const blogID = req.params.blog_id
+        const body = req.body
+        const queryForInsertion = ` INSERT INTO BlogComments (blog_id, author_name, author_email, content)
+                                    VALUES (?, ?, ?, ?)`
+        await blogDb.run(queryForInsertion, blogID, body.author_name, body.author_email, body.content)
+        res.status(StatusCodes.OK).send()
+    } catch (e) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
     }
 
 });
@@ -135,7 +149,7 @@ app.post("/create_blog", async function (req, res) {
         }
         res.json({blog_id: insertedBlogID})
     } catch (e) {
-        res.json({error: e.message})
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
     }
 
 });
