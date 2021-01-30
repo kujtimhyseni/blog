@@ -76,6 +76,10 @@ app.get("/blog", async function (req, res) {
         blog.tags = (await blogDb.all(`SELECT tag_name as tag
                                        from BlogTags
                                        where blog_id = ?`, blog.id)).map(row => row.tag)
+
+        blog.comments =  (await blogDb.all(`SELECT author_name,author_email,content as tag
+                                       from BlogComments
+                                       where blog_id = ?`, blog.id))
         res.json(blog)
     } catch (e) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
