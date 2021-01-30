@@ -47,13 +47,36 @@ app.get("/blogs", async function (req, res) {
         await allBlogs.reduce(async (memo, blog) => {
             await memo;
             console.log(blog)
-            let dbTagResult = await blogDb.all(`SELECT tag_name as tag from BlogTags where blog_id = ?`, blog.id);
+            let dbTagResult = await blogDb.all(`SELECT tag_name as tag
+                                                from BlogTags
+                                                where blog_id = ?`, blog.id);
             blog.tags = dbTagResult.map(row => row.tag)
 
         }, undefined);
 
         console.log(allBlogs)
         res.json(allBlogs)
+    } catch (e) {
+        res.json({error: e.message})
+    }
+
+});
+
+
+app.get("/blog", async function (req, res) {
+    try {
+        const blogId = req.query.blog_id
+        const query = `SELECT id, title, content, creation_date, author, visitor_count
+                       FROM Blog
+                       where id = ?;`
+        const blog = await blogDb.get(query, blogId);
+        if (blog === undefined) {
+            return res.status(StatusCodes.NOT_FOUND).json({error: "Blog with requested ID does not exist"})
+        }
+        blog.tags = (await blogDb.all(`SELECT tag_name as tag
+                                       from BlogTags
+                                       where blog_id = ?`, blog.id)).map(row => row.tag)
+        res.json(blog)
     } catch (e) {
         res.json({error: e.message})
     }
@@ -105,7 +128,7 @@ app.post("/create_blog", async function (req, res) {
             ':author': body.username,
         })
         const insertedBlogID = dbRes.lastID
-        
+
         for (const tag of body.tags) {
             const queryForAddingTag = `INSERT INTO BlogTags(blog_id, tag_name) VALUES (:blog_id,:tag)`
             await blogDb.run(queryForAddingTag, {':blog_id': insertedBlogID, ':tag': tag});
