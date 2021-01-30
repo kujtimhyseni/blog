@@ -61,6 +61,33 @@ app.get("/blogs", async function (req, res) {
     }
 
 });
+app.get("/blog/search", async function (req, res) {
+    try {
+        const tagToSearch = req.query.tag;
+        const query = `SELECT distinct B.id,
+                                       title,
+                                       CASE
+                                           WHEN LENGTH(content) > 50 THEN
+                                               substr(content, 1, 50) || '...'
+                                           ELSE
+                                               content
+                                           END                                                                                 AS content,
+                                       creation_date,
+                                       author,
+                                       visitor_count,
+                                       (SELECT GROUP_CONCAT(BlogTags.tag_name) from BlogTags where BlogTags.blog_id = B.id) as tags
+
+                       from BlogTags t
+                                inner join Blog B on t.blog_id = B.id
+                       where tag_name LIKE ?`
+        const blogsThatMatch = await blogDb.all(query,`%${tagToSearch}%`);
+        res.json(blogsThatMatch)
+    } catch (e) {
+        console.log(e)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
+    }
+
+});
 
 
 app.get("/blog", async function (req, res) {
@@ -77,9 +104,9 @@ app.get("/blog", async function (req, res) {
                                        from BlogTags
                                        where blog_id = ?`, blog.id)).map(row => row.tag)
 
-        blog.comments =  (await blogDb.all(`SELECT author_name,author_email,content as tag
-                                       from BlogComments
-                                       where blog_id = ?`, blog.id))
+        blog.comments = (await blogDb.all(`SELECT author_name, author_email, content as tag
+                                           from BlogComments
+                                           where blog_id = ?`, blog.id))
         res.json(blog)
     } catch (e) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
