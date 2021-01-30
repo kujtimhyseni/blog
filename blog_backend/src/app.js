@@ -23,6 +23,7 @@ let blogDb;
 
 (async () => {
     blogDb = await open({filename: DB_FILE_PATH, driver: sqlite3.Database})
+    await blogDb.run(`PRAGMA foreign_keys=ON`)
 })()
 
 
@@ -42,9 +43,17 @@ app.get("/blogs", async function (req, res) {
                               author,
                               visitor_count
                        FROM Blog;`
-        const row = await blogDb.all(query);
-        console.log(row)
-        res.json(row)
+        const allBlogs = await blogDb.all(query);
+        await allBlogs.reduce(async (memo, blog) => {
+            await memo;
+            console.log(blog)
+            let dbTagResult = await blogDb.all(`SELECT tag_name as tag from BlogTags where blog_id = ?`, blog.id);
+            blog.tags = dbTagResult.map(row => row.tag)
+
+        }, undefined);
+
+        console.log(allBlogs)
+        res.json(allBlogs)
     } catch (e) {
         res.json({error: e.message})
     }
@@ -62,8 +71,46 @@ app.put("/count_visitor/blog/:blog_id", async function (req, res) {
             return res.status(StatusCodes.BAD_REQUEST).json({error: `No such blog ${blogID}`})
         }
         dbRes = await blogDb.get("SELECT visitor_count from Blog where id = ?", blogID);
-        console.log("Returning visitor_count",dbRes.visitor_count)
+        console.log("Returning visitor_count", dbRes.visitor_count)
         res.json(dbRes)
+    } catch (e) {
+        res.json({error: e.message})
+    }
+
+});
+
+
+async function authenticateAdmin(username, password) {
+    const query = `SELECT COUNT(1) AS count
+                   from Admins
+                   where user_name = ? and password = ?`
+    const dbResult = await blogDb.get(query, username, password)
+    return dbResult.count > 0;
+}
+
+app.post("/create_blog", async function (req, res) {
+    try {
+        const body = req.body;
+        console.log(body)
+        const authenticated = await authenticateAdmin(body.username, body.password);
+        if (authenticated !== true) {
+            return res.status(StatusCodes.UNAUTHORIZED).json({error: "UNAUTHORIZED"})
+        }
+        const queryForInsertion = `
+            INSERT INTO Blog (title, content, creation_date, author)
+            VALUES (:title, :content, datetime(), :author)`
+        let dbRes = await blogDb.run(queryForInsertion, {
+            ':title': body.title,
+            ':content': body.content,
+            ':author': body.username,
+        })
+        const insertedBlogID = dbRes.lastID
+        
+        for (const tag of body.tags) {
+            const queryForAddingTag = `INSERT INTO BlogTags(blog_id, tag_name) VALUES (:blog_id,:tag)`
+            await blogDb.run(queryForAddingTag, {':blog_id': insertedBlogID, ':tag': tag});
+        }
+        res.json({blog_id: insertedBlogID})
     } catch (e) {
         res.json({error: e.message})
     }
