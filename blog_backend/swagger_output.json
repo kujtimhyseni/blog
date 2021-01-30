@@ -31,14 +31,16 @@
         "responses": {}
       }
     },
-    "/count_visitor": {
-      "get": {
+    "/count_visitor/blog/{blog_id}": {
+      "put": {
         "tags": [],
         "description": "",
         "parameters": [
           {
             "name": "blog_id",
-            "in": "query"
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {}

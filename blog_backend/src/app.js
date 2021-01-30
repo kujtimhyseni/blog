@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser = require('body-parser');
 const http = require('http');
 const cors = require('cors')
 const swaggerUi = require('swagger-ui-express')
@@ -12,6 +13,7 @@ const PORT = 3000
 const DB_FILE_PATH = "./blog.db"
 
 const app = express();
+app.use(bodyParser.json());
 app.use(cors())
 http.createServer(app).listen(PORT);
 
@@ -49,17 +51,18 @@ app.get("/blogs", async function (req, res) {
 
 });
 
-app.get("/count_visitor", async function (req, res) {
+app.put("/count_visitor/blog/:blog_id", async function (req, res) {
     try {
-        const blogID = req.query.blog_id
+        const blogID = req.params.blog_id
+        console.log('Count_visitor for blog with id:', req.params.blog_id);
         var dbRes = await blogDb.run(`UPDATE Blog
                                       set visitor_count = visitor_count + 1
                                       where id = ?`, blogID);
         if (dbRes.changes === 0) {
-            return res.status(StatusCodes.BAD_REQUEST).json({error: "No such blog"})
+            return res.status(StatusCodes.BAD_REQUEST).json({error: `No such blog ${blogID}`})
         }
         dbRes = await blogDb.get("SELECT visitor_count from Blog where id = ?", blogID);
-        console.log(dbRes)
+        console.log("Returning visitor_count",dbRes.visitor_count)
         res.json(dbRes)
     } catch (e) {
         res.json({error: e.message})
