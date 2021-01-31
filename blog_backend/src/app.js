@@ -31,51 +31,16 @@ app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.get("/blogs", async function (req, res) {
     try {
-
-        let orderType = req.query.order_type.toUpperCase()
-        if (orderType !== "DESC" && orderType !== "ASC") {
-            orderType = "ASC"
+        const tagToSearch = req.query.filter_tag;
+        let orderType = req.query.order_type
+        if (orderType === undefined  || (orderType.toUpperCase() !== "DESC" && orderType.toUpperCase() !== "ASC")) {
+            orderType = "DESC"
         }
-
-        const query = `SELECT id,
-                              title,
-                              CASE
-                                  WHEN LENGTH(content) > 300 THEN
-                                      substr(content, 1, 300) || '...'
-                                  ELSE
-                                      content
-                                  END AS content,
-                              creation_date,
-                              author,
-                              visitor_count
-                       FROM Blog ORDER BY id ${orderType};`
-        const allBlogs = await blogDb.all(query);
-        await allBlogs.reduce(async (memo, blog) => {
-            await memo;
-            console.log(blog)
-            let dbTagResult = await blogDb.all(`SELECT tag_name as tag
-                                                from BlogTags
-                                                where blog_id = ?`, blog.id);
-            blog.tags = dbTagResult.map(row => row.tag)
-
-        }, undefined);
-
-        console.log(allBlogs)
-        res.json({ "blogs": allBlogs})
-    } catch (e) {
-        console.log(e)
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
-    }
-
-});
-app.get("/blog/search", async function (req, res) {
-    try {
-        const tagToSearch = req.query.tag;
         const query = `SELECT distinct B.id,
                                        title,
                                        CASE
-                                           WHEN LENGTH(content) > 50 THEN
-                                               substr(content, 1, 50) || '...'
+                                           WHEN LENGTH(content) > 300 THEN
+                                               substr(content, 1, 300) || '...'
                                            ELSE
                                                content
                                            END                         AS content,
@@ -88,9 +53,9 @@ app.get("/blog/search", async function (req, res) {
 
                        from BlogTags t
                                 inner join Blog B on t.blog_id = B.id
-                       where tag_name LIKE ?`
+                       where tag_name LIKE ?  ORDER BY B.id ${orderType}`
         const blogsThatMatch = await blogDb.all(query, `%${tagToSearch}%`);
-        res.json(blogsThatMatch)
+        res.json({blogs:blogsThatMatch})
     } catch (e) {
         console.log(e)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
