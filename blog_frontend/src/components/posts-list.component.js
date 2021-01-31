@@ -19,11 +19,8 @@ class PostsList extends Component {
   constructor(props) {
     super(props);
     this.onChangeSearchTag = this.onChangeSearchTag.bind(this);
-    this.retrievePosts = this.retrievePosts.bind(this);
     this.refreshList = this.refreshList.bind(this);
     this.setActivePost = this.setActivePost.bind(this);
-    // this.removeAllPosts = this.removeAllPosts.bind(this);
-    this.searchTag = this.searchTag.bind(this);
   }
 
   componentDidMount() {
@@ -39,7 +36,7 @@ class PostsList extends Component {
   }
 
   retrievePosts = () => {
-    PostDataService.getAllBlogPosts()
+    PostDataService.getAllBlogPosts(this.state.searchTag)
       .then(response => {
         let blogs = response.data.blogs
         console.log(blogs)
@@ -68,29 +65,6 @@ class PostsList extends Component {
     });
   }
 
-  // removeAllPosts() {
-  //   PostDataService.deleteAll()
-  //     .then(response => {
-  //       console.log(response.data);
-  //       this.refreshList();
-  //     })
-  //     .catch(e => {
-  //       console.log(e);
-  //     });
-  // }
-
-  searchTag() {
-    PostDataService.findByTag(this.state.searchTag)
-      .then(response => {
-        this.setState({
-          posts: response.data
-        });
-        console.log(response.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  }
 
   render() { // render the html
     const { classes } = this.props
@@ -109,7 +83,7 @@ class PostsList extends Component {
               size="small"
               variant="outlined"
               className={classes.textField}
-              onClick={this.searchTag}>
+              onClick={this.retrievePosts}>
               Search
             </Button>
           </Grid>
