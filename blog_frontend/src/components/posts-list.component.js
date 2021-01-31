@@ -131,7 +131,6 @@ class PostsList extends Component {
             </Button>
           </Grid>
           <Grid item md={4}>
-            {/* <h2>Posts List</h2> */}
 
             <div className="list-group">
               {posts &&
@@ -142,20 +141,13 @@ class PostsList extends Component {
                     divider
                     button	
                     key={index}>
-                    {Post.title}
+                    <ul style={{ listStyleType : "none"}}>
+                      <li><h3>{Post.title}</h3></li>
+                      <li> <span>{Post.description}</span></li>
+                    </ul>
                   </ListItem>
                 ))}
             </div>
-
-            {/* <Button
-              className={`${classes.button} ${classes.removeAll}`}
-              size="small"
-              color="secondary"
-              variant="contained"
-              onClick={this.removeAllPosts}
-            >
-              Remove All
-          </Button> */}
           </Grid>
           <Grid item md={8}>
             {currentPost ? (

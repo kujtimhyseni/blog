@@ -28,6 +28,10 @@ class PostDataService {
   findByTag(tag) {
     return http.get(`/posts?tag=${tag}`);
   }
+
+  getPopularTags(){
+    return http.get(`/popular_tags?limit=5`)
+  }
 }
 
 export default new PostDataService();

@@ -1,12 +1,35 @@
-export const styles = {
+const drawerWidth = 240;
+
+export const styles = (theme) => ({
+    root: {
+        display: 'flex',
+    },
     appBar: {
         backgroundColor: "#343A40",
         height: "50px",
         '& .MuiToolbar-regular': {
             minHeight: "50px"
-        }
+        },
+        zIndex: theme.zIndex.drawer + 1,
+    },
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+    },
+    drawerPaper: {
+        paddingTop: "50px",
+        width: drawerWidth,
+    },
+    drawerContainer: {
+        overflow: 'auto',
+    },
+    content: {
+        paddingTop: "50px",
+        flexGrow: 1,
+        padding: theme.spacing(3),
     },
     name: {
+        marginLeft: "15px",
         marginRight: "15px"
     },
     link: {
@@ -73,4 +96,4 @@ export const styles = {
     blog: {
         marginLeft: "25px"
     },
-};
+});
