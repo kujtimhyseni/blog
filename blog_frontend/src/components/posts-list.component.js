@@ -39,10 +39,10 @@ class PostsList extends Component {
   }
 
   retrievePosts = () => {
-    PostDataService.getAllBlogPosts(this.state.orderType)
+    PostDataService.getAllBlogPosts()
       .then(response => {
         let blogs = response.data.blogs
-
+        console.log(blogs)
         this.setState({
           posts: blogs
         });
@@ -128,7 +128,7 @@ class PostsList extends Component {
                       <div style={{display:"flex",flexDirection: "column"}}>
                         <h3>{Post.title}</h3>
                         <div  style={{paddingLeft:"0"}} className={classes.ListItemTile + " MuiTypography-colorTextSecondary MuiTypography-displayBlock"}>{Post.content}</div>
-                        <span><br/>Tags: {Post.tags.join(", ")}</span>
+                        <span><br/>Tags: {Post.tags}</span>
                       </div>
                     </ListItem>
                 ))}

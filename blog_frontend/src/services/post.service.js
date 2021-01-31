@@ -32,11 +32,11 @@ class PostDataService {
   getPopularTags(){
     return http.get(`/popular_tags?limit=5`)
   }
-
-  getAllBlogPosts(orderType){
+  getAllBlogPosts(filterTag){
     return http.get(`/blogs`,{
       params:{
-        order_type: orderType,
+        order_type: "DESC",
+        filter_tag: filterTag === undefined ? "" : filterTag,
       }
     })
   }
