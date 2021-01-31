@@ -31,19 +31,26 @@ app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.get("/blogs", async function (req, res) {
     try {
+        const postPerPage = req.query.post_per_page
+        const currentPage = req.query.current_page
+        let orderType = req.query.order_type.toUpperCase()
+        if (orderType !== "DESC" && orderType !== "ASC") {
+            orderType = "ASC"
+        }
+
         const query = `SELECT id,
                               title,
                               CASE
-                                  WHEN LENGTH(content) > 50 THEN
-                                      substr(content, 1, 50) || '...'
+                                  WHEN LENGTH(content) > 300 THEN
+                                      substr(content, 1, 300) || '...'
                                   ELSE
                                       content
                                   END AS content,
                               creation_date,
                               author,
                               visitor_count
-                       FROM Blog;`
-        const allBlogs = await blogDb.all(query);
+                       FROM Blog ORDER BY id ${orderType} LIMIT :limit offset :offset;`
+        const allBlogs = await blogDb.all(query, {":limit": postPerPage, ":offset": postPerPage * currentPage});
         await allBlogs.reduce(async (memo, blog) => {
             await memo;
             console.log(blog)
@@ -54,9 +61,13 @@ app.get("/blogs", async function (req, res) {
 
         }, undefined);
 
+        let rowCount = await blogDb.get("SELECT COUNT(*) as count from Blog")
+        let totalPages = Math.ceil(rowCount.count / postPerPage)
+        console.log("rowCount", rowCount)
         console.log(allBlogs)
-        res.json(allBlogs)
+        res.json({"number_of_pages": totalPages, "blogs:": allBlogs})
     } catch (e) {
+        console.log(e)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
     }
 
@@ -120,7 +131,7 @@ app.get("/blog", async function (req, res) {
 app.get("/popular_tags", async function (req, res) {
     try {
         let limit = Number(req.query.limit)
-        if(!Number.isInteger(limit)){
+        if (!Number.isInteger(limit)) {
             limit = -1;
         }
         const query = `SELECT tag_name, count(*) as blogs_count
