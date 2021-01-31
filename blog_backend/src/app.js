@@ -31,8 +31,7 @@ app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.get("/blogs", async function (req, res) {
     try {
-        const postPerPage = req.query.post_per_page
-        const currentPage = req.query.current_page
+
         let orderType = req.query.order_type.toUpperCase()
         if (orderType !== "DESC" && orderType !== "ASC") {
             orderType = "ASC"
@@ -49,8 +48,8 @@ app.get("/blogs", async function (req, res) {
                               creation_date,
                               author,
                               visitor_count
-                       FROM Blog ORDER BY id ${orderType} LIMIT :limit offset :offset;`
-        const allBlogs = await blogDb.all(query, {":limit": postPerPage, ":offset": postPerPage * currentPage});
+                       FROM Blog ORDER BY id ${orderType};`
+        const allBlogs = await blogDb.all(query);
         await allBlogs.reduce(async (memo, blog) => {
             await memo;
             console.log(blog)
@@ -61,11 +60,8 @@ app.get("/blogs", async function (req, res) {
 
         }, undefined);
 
-        let rowCount = await blogDb.get("SELECT COUNT(*) as count from Blog")
-        let totalPages = Math.ceil(rowCount.count / postPerPage)
-        console.log("rowCount", rowCount)
         console.log(allBlogs)
-        res.json({"number_of_pages": totalPages, "blogs:": allBlogs})
+        res.json({ "blogs": allBlogs})
     } catch (e) {
         console.log(e)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
