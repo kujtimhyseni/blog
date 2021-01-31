@@ -40,6 +40,14 @@ class PostDataService {
       }
     })
   }
+
+  getBlog(id) {
+    return http.get(`/blog`,{
+      params:{
+        blog_id: id,
+      }
+    })
+  }
 }
 
 export default new PostDataService();

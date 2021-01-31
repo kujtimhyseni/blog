@@ -57,11 +57,19 @@ class PostsList extends Component {
         });
     }
 
-    setActivePost(Post, index) {
-        this.setState({
-            currentPost: Post,
-            currentIndex: index
-        });
+    setActivePost(post, index) {
+        PostDataService.getBlog(post.id)
+            .then(response => {
+                let blog = response.data
+                console.log(blog)
+                this.setState({
+                    currentPost: blog,
+                    currentIndex: index
+                });
+            })
+            .catch(e => {
+                console.log(e);
+            });
     }
 
 
@@ -73,7 +81,7 @@ class PostsList extends Component {
                     <Grid className={classes.search} item sm={12} xs={12} md={12} xl={12} lg={12}>
                         {this.renderSearchBar()}
                     </Grid>
-                    <Grid item md={5}> {this.renderPostItems()}  </Grid>
+                    <Grid item md={5}><div style={{overflowY: "scroll", borderRight: " 0.5px solid black"}}> {this.renderPostItems()} </div> </Grid>
                     <Grid item md={7}>
                         <div style={{marginLeft: "20px"}}>
                             {this.renderSingleBlog()}
@@ -116,7 +124,7 @@ class PostsList extends Component {
 
         if (!currentPost) {
             return (
-                <div>
+                <div style={{textAlign:"center" }}>
                     <br/>
                     <p>No posts clicked...</p>
                 </div>
@@ -124,17 +132,11 @@ class PostsList extends Component {
         }
         return (
             <div className={classes.Post}>
-                <h4>Post</h4>
-                <div className={classes.detail}>
-                    <label>
-                        <strong>Title:</strong>
-                    </label>{" "}
+                <h1 className={classes.detail} style={{textAlign:"center" }}>
                     {currentPost.title}
-                </div>
-                <div className={classes.detail}>
-                    <label>
-                        <strong>Description:</strong>
-                    </label>{" "}
+                </h1>
+                <br/>  <br/>  <br/>
+                <div className={classes.detail} style={{textAlign:"center"}}>
                     {currentPost.content}
                 </div>
             </div>
