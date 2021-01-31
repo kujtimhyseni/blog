@@ -25,15 +25,14 @@ class Sidebar extends Component {
 
     render() {
         const { classes } = this.props
-        console.log("Sidebar props",this.props)
         return (
             <React.Fragment>
                 <h2 className={classes.name} >Popular tags</h2>
                 <Grid item>
                     {this.state.tags.map(tag =>
                         <ListItem key={tag.tag_name} divider >
-                            <div className={classes.detail}>{tag.tag_name}</div>
-                            <div className={classes.detail}>({tag.blogs_count})</div>
+                            <div className={classes.detail}>({tag.blogs_count}): {tag.tag_name}</div>
+                            {/*<div className={classes.detail}></div>*/}
                         </ListItem>)}
                 </Grid>
             </React.Fragment>

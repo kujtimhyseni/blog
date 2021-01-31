@@ -39,7 +39,7 @@ export const styles = (theme) => ({
         textDecoration: "unset"
     },
     form: {
-        marginLeft: "50px"
+         marginLeft: "0px"
     },
     textField: {
         margin: "15px 0"
@@ -96,4 +96,9 @@ export const styles = (theme) => ({
     blog: {
         marginLeft: "25px"
     },
+    ListItemTile: {
+        overflow: "hidden",
+        padding: "5px",
+        textOverflow : "ellipsis"
+    }
 });

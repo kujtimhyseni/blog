@@ -32,6 +32,14 @@ class PostDataService {
   getPopularTags(){
     return http.get(`/popular_tags?limit=5`)
   }
+
+  getAllBlogPosts(orderType){
+    return http.get(`/blogs`,{
+      params:{
+        order_type: orderType,
+      }
+    })
+  }
 }
 
 export default new PostDataService();
