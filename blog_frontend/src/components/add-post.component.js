@@ -9,17 +9,15 @@ class AddPost extends Component {
     constructor(props) {
         super(props);
         this.onChangeTitle = this.onChangeTitle.bind(this);
-        this.onChangeDescription = this.onChangeDescription.bind(this);
+        this.onChangeContent = this.onChangeContent.bind(this);
         this.savePost = this.savePost.bind(this);
         this.newPost = this.newPost.bind(this);
 
         this.state = {
             id: null,
             title: "",
-            description: "",
+            content: "",
             tags: [],
-            published: false,
-
             submitted: false
         };
     }
@@ -30,9 +28,9 @@ class AddPost extends Component {
         });
     }
 
-    onChangeDescription(e) {
+    onChangeContent(e) {
         this.setState({
-            description: e.target.value
+            content: e.target.value
         });
     }
 
@@ -51,41 +49,29 @@ class AddPost extends Component {
     savePost() {
         var data = {
             title: this.state.title,
-            description: this.state.description,
-            tags: this.state.tags
+            content: this.state.content,
+            tags: this.state.tags,
+            username: "kujtim",
+            password: "kujtim",
+
         };
-        this.setState({
-            id: data.id,
-            title: data.title,
-            description: data.description,
-            published: data.published,
-            tags: data.tags,
-            submitted: true
-        });
-        //TODO: Uncomment code after integrating with backend
-        // PostDataService.create(data)
-        //     .then(response => {
-        //         this.setState({
-        //             id: response.data.id,
-        //             title: response.data.title,
-        //             description: response.data.description,
-        //             published: response.data.published,
-        //             tags: response.data.tags,
-        //             submitted: true
-        //         });
-        //         console.log(response.data);
-        //     })
-        //     .catch(e => {
-        //         console.log(e);
-        //     });
+        PostDataService.createBlog(data)
+            .then(response => {
+                this.setState({
+                    submitted: true
+                });
+                console.log(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
     }
 
     newPost() {
         this.setState({
             id: null,
             title: "",
-            description: "",
-            published: false,
+            content: "",
             tags: [],
             submitted: false
         });
@@ -121,12 +107,12 @@ class AddPost extends Component {
 
                             <div className={classes.textField}>
                                 <TextField
-                                    label="Description"
-                                    name="description"
+                                    label="Content"
+                                    name="content"
                                     rows={3}
                                     rowsMax={5}
-                                    value={this.state.description}
-                                    onChange={this.onChangeDescription}
+                                    value={this.state.content}
+                                    onChange={this.onChangeContent}
                                     required
                                 />
                             </div>
