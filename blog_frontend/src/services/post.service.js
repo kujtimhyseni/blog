@@ -40,6 +40,9 @@ class PostDataService {
       }
     })
   }
+  updateVisitorCount(id) {                                                    
+    return http.put(`/count_visitor/blog/${id}`)
+  }
 
   getBlog(id) {
     return http.get(`/blog`,{

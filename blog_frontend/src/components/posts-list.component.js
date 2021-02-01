@@ -13,7 +13,8 @@ class PostsList extends Component {
         currentPost: null,
         currentIndex: -1,
         searchTag: "",
-        orderType: "DESC"
+        orderType: "DESC",
+        visitor_count: 0
     };
 
 
@@ -91,6 +92,18 @@ class PostsList extends Component {
                     currentPost: blog,
                     currentIndex: index
                 });
+
+                PostDataService.updateVisitorCount(post.id)
+                    .then(response => {
+                        let data = response.data
+                        this.setState({
+                            visitor_count: data.visitor_count
+                        });
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    });
+
             })
             .catch(e => {
                 console.log(e);
@@ -141,7 +154,7 @@ class PostsList extends Component {
 
     renderSingleBlog() {
         const {classes} = this.props
-        const {posts, currentPost} = this.state
+        const {posts, currentPost, visitor_count} = this.state
 
         if (posts.length === 0) {
             return ""
@@ -165,6 +178,8 @@ class PostsList extends Component {
                     {currentPost.content}
                 </div>
                 <br/>  <br/>
+                <h4>Visits: {visitor_count}</h4>
+
                 <h4>Tags: {currentPost.tags.join(", ")}</h4> <br/>
                 <div>
                     {currentPost.comments.map(comment =>
