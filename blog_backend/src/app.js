@@ -135,8 +135,10 @@ app.post("/add_comment/blog/:blog_id", async function (req, res) {
         const body = req.body
         const queryForInsertion = ` INSERT INTO BlogComments (blog_id, author_name, author_email, content)
                                     VALUES (?, ?, ?, ?)`
-        await blogDb.run(queryForInsertion, blogID, body.author_name, body.author_email, body.content)
-        res.status(StatusCodes.OK).send()
+        const dbRes = await blogDb.run(queryForInsertion, blogID, body.author_name, body.author_email, body.content)
+        const insertedCommentID = dbRes.lastID
+
+        res.status(StatusCodes.OK).json({id : insertedCommentID})
     } catch (e) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
     }
