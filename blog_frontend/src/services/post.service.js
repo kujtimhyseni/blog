@@ -48,6 +48,9 @@ class PostDataService {
       }
     })
   }
+  addNewComment(id, newComment) {
+    return http.post(`/add_comment/blog/${id}`, newComment)
+  }
 }
 
 export default new PostDataService();

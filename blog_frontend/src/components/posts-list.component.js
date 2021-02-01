@@ -1,8 +1,10 @@
 import React, {Component} from "react";
 import PostDataService from "../services/post.service";
+import ShowComment from "../components/view-comment-compoent";
 
 import {styles} from "../css-common"
 import {Button, Grid, TextField, ListItem, withStyles} from "@material-ui/core";
+import AddComment from "./add-comment-compoent";
 
 class PostsList extends Component {
 
@@ -13,6 +15,29 @@ class PostsList extends Component {
         searchTag: "",
         orderType: "DESC"
     };
+
+
+    handleAddNewComment = (name, email, comment) => {
+        const newComment = {
+            author_name: name,
+            author_email: email !== undefined ? email : "",
+            content: comment
+        }
+        const blog =  {...this.state.currentPost}
+        PostDataService.addNewComment(blog.id, newComment)
+            .then(response => {
+                newComment.id = response.data.id;
+                let comments = [...blog.comments]
+                comments.push(newComment)
+                blog.comments = comments
+                this.setState({
+                    currentPost: blog
+                });
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
 
 
     constructor(props) {
@@ -139,6 +164,14 @@ class PostsList extends Component {
                 <div className={classes.detail} style={{textAlign:"center"}}>
                     {currentPost.content}
                 </div>
+                <br/>  <br/>
+                <h4>Tags: {currentPost.tags.join(", ")}</h4> <br/>
+                <div>
+                    {currentPost.comments.map(comment =>
+                        <ShowComment key={comment.id} comment={comment} />
+                    )}
+                </div>
+                <AddComment  onAddNewComment={this.handleAddNewComment} />
             </div>
         );
     }

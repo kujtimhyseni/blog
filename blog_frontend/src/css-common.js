@@ -100,5 +100,15 @@ export const styles = (theme) => ({
         overflow: "hidden",
         padding: "5px",
         textOverflow : "ellipsis"
+    },
+    BlogComment:{
+        padding:"10px",
+        border: "1px solid black",
+        paddingBottom: "14px"
+    },
+    AddComment:{
+        padding:"10px",
+        border: "1px solid grey",
+        paddingBottom: "14px"
     }
 });
