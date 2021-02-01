@@ -32,7 +32,7 @@ export const styles = {
         border: "4px solid orange",
         borderRadius: "5px",
         textDecoration: "none",
-        fontSize: "13px",
+        fontSize: "23px",
         fontWeight: "bold",
         color: "white"
     },
