@@ -109,8 +109,9 @@ class AddPost extends Component {
                                 <TextField
                                     label="Content"
                                     name="content"
-                                    rows={3}
-                                    rowsMax={5}
+                                    multiline
+                                    rows={6}
+                                    variant="outlined"
                                     value={this.state.content}
                                     onChange={this.onChangeContent}
                                     required
