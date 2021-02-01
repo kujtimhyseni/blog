@@ -31,44 +31,16 @@ app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.get("/blogs", async function (req, res) {
     try {
-        const query = `SELECT id,
-                              title,
-                              CASE
-                                  WHEN LENGTH(content) > 50 THEN
-                                      substr(content, 1, 50) || '...'
-                                  ELSE
-                                      content
-                                  END AS content,
-                              creation_date,
-                              author,
-                              visitor_count
-                       FROM Blog;`
-        const allBlogs = await blogDb.all(query);
-        await allBlogs.reduce(async (memo, blog) => {
-            await memo;
-            console.log(blog)
-            let dbTagResult = await blogDb.all(`SELECT tag_name as tag
-                                                from BlogTags
-                                                where blog_id = ?`, blog.id);
-            blog.tags = dbTagResult.map(row => row.tag)
-
-        }, undefined);
-
-        console.log(allBlogs)
-        res.json(allBlogs)
-    } catch (e) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
-    }
-
-});
-app.get("/blog/search", async function (req, res) {
-    try {
-        const tagToSearch = req.query.tag;
+        const tagToSearch = req.query.filter_tag;
+        let orderType = req.query.order_type
+        if (orderType === undefined  || (orderType.toUpperCase() !== "DESC" && orderType.toUpperCase() !== "ASC")) {
+            orderType = "DESC"
+        }
         const query = `SELECT distinct B.id,
                                        title,
                                        CASE
-                                           WHEN LENGTH(content) > 50 THEN
-                                               substr(content, 1, 50) || '...'
+                                           WHEN LENGTH(content) > 300 THEN
+                                               substr(content, 1, 300) || '...'
                                            ELSE
                                                content
                                            END                         AS content,
@@ -81,9 +53,9 @@ app.get("/blog/search", async function (req, res) {
 
                        from BlogTags t
                                 inner join Blog B on t.blog_id = B.id
-                       where tag_name LIKE ?`
+                       where tag_name LIKE ?  ORDER BY B.id ${orderType}`
         const blogsThatMatch = await blogDb.all(query, `%${tagToSearch}%`);
-        res.json(blogsThatMatch)
+        res.json({blogs:blogsThatMatch})
     } catch (e) {
         console.log(e)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
@@ -106,7 +78,7 @@ app.get("/blog", async function (req, res) {
                                        from BlogTags
                                        where blog_id = ?`, blog.id)).map(row => row.tag)
 
-        blog.comments = (await blogDb.all(`SELECT author_name, author_email, content
+        blog.comments = (await blogDb.all(`SELECT id, author_name, author_email, content 
                                            from BlogComments
                                            where blog_id = ?`, blog.id))
         res.json(blog)
@@ -120,7 +92,7 @@ app.get("/blog", async function (req, res) {
 app.get("/popular_tags", async function (req, res) {
     try {
         let limit = Number(req.query.limit)
-        if(!Number.isInteger(limit)){
+        if (!Number.isInteger(limit)) {
             limit = -1;
         }
         const query = `SELECT tag_name, count(*) as blogs_count
@@ -163,8 +135,10 @@ app.post("/add_comment/blog/:blog_id", async function (req, res) {
         const body = req.body
         const queryForInsertion = ` INSERT INTO BlogComments (blog_id, author_name, author_email, content)
                                     VALUES (?, ?, ?, ?)`
-        await blogDb.run(queryForInsertion, blogID, body.author_name, body.author_email, body.content)
-        res.status(StatusCodes.OK).send()
+        const dbRes = await blogDb.run(queryForInsertion, blogID, body.author_name, body.author_email, body.content)
+        const insertedCommentID = dbRes.lastID
+
+        res.status(StatusCodes.OK).json({id : insertedCommentID})
     } catch (e) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
     }

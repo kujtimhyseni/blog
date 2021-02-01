@@ -6,18 +6,19 @@ import { styles } from "./css-common"
 import AddPost from "./components/add-post.component";
 import Post from "./components/post.component";
 import PostsList from "./components/posts-list.component";
+import Sidebar from "./components/sidebar";
 
-import { AppBar, Toolbar, Typography, withStyles } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, withStyles,Drawer } from '@material-ui/core';
 
 class App extends Component {
   render() {
     const { classes } = this.props
 
     return (
-      <div>
-        <AppBar className={classes.appBar} position="static">
-          <Toolbar>
-            <Typography className={classes.name} variant="h6">
+      <div className={classes.root}>
+        <AppBar  className={classes.appBar} position="fixed">
+          <Toolbar >
+            <Typography style={{width : "240"}} className={classes.name} variant="h6">
               Blog
             </Typography>
             {/* just declare a link */}
@@ -33,13 +34,24 @@ class App extends Component {
             </Link>
           </Toolbar>
         </AppBar>
-
+        <Drawer
+            className={classes.drawer}
+            variant="permanent"
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            anchor="left" >
+          <div className={classes.toolbar} />
+          <Sidebar/>
+        </Drawer>
+        <main className={classes.content}>
           <Switch>
             {/* map route with component */}
             <Route exact path={["/", "/posts"]} component={PostsList} /> 
             <Route exact path="/add" component={AddPost} />
             <Route path="/posts/:id" component={Post} />
           </Switch>
+        </main>
       </div>
     );
   }

@@ -28,6 +28,29 @@ class PostDataService {
   findByTag(tag) {
     return http.get(`/posts?tag=${tag}`);
   }
+
+  getPopularTags(){
+    return http.get(`/popular_tags?limit=5`)
+  }
+  getAllBlogPosts(filterTag){
+    return http.get(`/blogs`,{
+      params:{
+        order_type: "DESC",
+        filter_tag: filterTag === undefined ? "" : filterTag,
+      }
+    })
+  }
+
+  getBlog(id) {
+    return http.get(`/blog`,{
+      params:{
+        blog_id: id,
+      }
+    })
+  }
+  addNewComment(id, newComment) {
+    return http.post(`/add_comment/blog/${id}`, newComment)
+  }
 }
 
 export default new PostDataService();
