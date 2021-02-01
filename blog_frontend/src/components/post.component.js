@@ -84,7 +84,6 @@ class Post extends Component {
             }
         });
 
-        //TODO: Uncomment code after integrating with backend
         // PostDataService.get(id)
         //     .then(response => {
         //         this.setState({
