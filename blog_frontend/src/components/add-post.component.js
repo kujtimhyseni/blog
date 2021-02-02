@@ -10,11 +10,16 @@ class AddPost extends Component {
         super(props);
         this.onChangeTitle = this.onChangeTitle.bind(this);
         this.onChangeContent = this.onChangeContent.bind(this);
+        this.onChangeEmail = this.onChangeEmail.bind(this);
+        this.onChangePassword = this.onChangePassword.bind(this);
+
         this.savePost = this.savePost.bind(this);
         this.newPost = this.newPost.bind(this);
 
         this.state = {
             id: null,
+            email: "",
+            password: "",
             title: "",
             content: "",
             tags: [],
@@ -31,6 +36,18 @@ class AddPost extends Component {
     onChangeContent(e) {
         this.setState({
             content: e.target.value
+        });
+    }
+
+    onChangeEmail(e) {
+        this.setState({
+            email: e.target.value
+        });
+    }
+
+    onChangePassword(e) {
+        this.setState({
+            password: e.target.value
         });
     }
 
@@ -51,9 +68,8 @@ class AddPost extends Component {
             title: this.state.title,
             content: this.state.content,
             tags: this.state.tags,
-            username: "kujtim",
-            password: "kujtim",
-
+            username: this.state.email,
+            password: this.state.password,
         };
         PostDataService.createBlog(data)
             .then(response => {
@@ -95,6 +111,26 @@ class AddPost extends Component {
                     </div>
                 ) : (
                         <div className={classes.form}>
+
+                        <h4>Log in</h4> 
+                            <TextField 
+                                required id="standard-required" 
+                                label="Email" 
+                                value={this.state.email}
+                                onChange={this.onChangeEmail}
+                            />
+                        
+                            <br/>
+                            <TextField 
+                                required id="standard-required" 
+                                label="Password" 
+                                value={this.state.password}
+                                onChange={this.onChangePassword}
+                            />
+                            <br/>
+                            <br/>
+
+                            <h4>Create Post</h4> 
                             <div className={classes.textField}>
                                 <TextField
                                     label="Title"
