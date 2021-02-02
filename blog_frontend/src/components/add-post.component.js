@@ -117,7 +117,7 @@ class AddPost extends Component {
                         <div className={classes.form}>
 
                         <h4>Log in</h4> 
-                        {this.state.login_success ? (<div></div>) : (<div> <h4> Unauthorized!</h4> </div>)}
+                        {this.state.login_success ? (<div></div>) : (<div> <h4 className={classes.red}> Unauthorized!</h4> </div>)}
 
                             <TextField 
                                 required id="standard-required" 
@@ -130,6 +130,7 @@ class AddPost extends Component {
                             <TextField 
                                 required id="standard-required" 
                                 label="Password" 
+                                type="password"
                                 value={this.state.password}
                                 onChange={this.onChangePassword}
                             />
