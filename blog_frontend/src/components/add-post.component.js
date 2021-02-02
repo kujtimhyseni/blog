@@ -23,7 +23,8 @@ class AddPost extends Component {
             title: "",
             content: "",
             tags: [],
-            submitted: false
+            submitted: false,
+            login_success: true,
         };
     }
 
@@ -80,6 +81,9 @@ class AddPost extends Component {
             })
             .catch(e => {
                 console.log(e);
+                this.setState({
+                    login_success: false
+                });
             });
     }
 
@@ -113,6 +117,8 @@ class AddPost extends Component {
                         <div className={classes.form}>
 
                         <h4>Log in</h4> 
+                        {this.state.login_success ? (<div></div>) : (<div> <h4> Unauthorized!</h4> </div>)}
+
                             <TextField 
                                 required id="standard-required" 
                                 label="Email" 
