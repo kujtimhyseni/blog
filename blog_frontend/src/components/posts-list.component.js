@@ -60,6 +60,12 @@ class PostsList extends Component {
         });
     }
 
+    handleOnKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            this.retrievePosts()
+        }
+    }
+
     retrievePosts = () => {
         PostDataService.getAllBlogPosts(this.state.searchTag)
             .then(response => {
@@ -139,6 +145,7 @@ class PostsList extends Component {
                 <TextField
                     label="Search by tag"
                     value={searchTag}
+                    onKeyDown={this.handleOnKeyDown}
                     onChange={this.onChangeSearchTag}
                 />
                 <Button
