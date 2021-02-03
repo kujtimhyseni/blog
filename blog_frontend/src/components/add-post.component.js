@@ -10,7 +10,7 @@ class AddPost extends Component {
         super(props);
         this.onChangeTitle = this.onChangeTitle.bind(this);
         this.onChangeContent = this.onChangeContent.bind(this);
-        this.onChangeEmail = this.onChangeEmail.bind(this);
+        this.onChangeUsername = this.onChangeUsername.bind(this);
         this.onChangePassword = this.onChangePassword.bind(this);
 
         this.savePost = this.savePost.bind(this);
@@ -40,9 +40,9 @@ class AddPost extends Component {
         });
     }
 
-    onChangeEmail(e) {
+    onChangeUsername(e) {
         this.setState({
-            email: e.target.value
+            username: e.target.value
         });
     }
 
@@ -69,13 +69,14 @@ class AddPost extends Component {
             title: this.state.title,
             content: this.state.content,
             tags: this.state.tags,
-            username: this.state.email,
+            username: this.state.username,
             password: this.state.password,
         };
         PostDataService.createBlog(data)
             .then(response => {
                 this.setState({
-                    submitted: true
+                    submitted: true,
+                    login_success : true
                 });
                 console.log(response.data);
             })
@@ -121,9 +122,9 @@ class AddPost extends Component {
 
                             <TextField 
                                 required id="standard-required" 
-                                label="Email" 
-                                value={this.state.email}
-                                onChange={this.onChangeEmail}
+                                label="Username"
+                                value={this.state.username}
+                                onChange={this.onChangeUsername}
                             />
                         
                             <br/>
@@ -142,6 +143,7 @@ class AddPost extends Component {
                                 <TextField
                                     label="Title"
                                     name="title"
+                                    fullWidth
                                     value={this.state.title}
                                     onChange={this.onChangeTitle}
                                     required
@@ -153,6 +155,7 @@ class AddPost extends Component {
                                     label="Content"
                                     name="content"
                                     multiline
+                                    fullWidth
                                     rows={6}
                                     variant="outlined"
                                     value={this.state.content}
@@ -164,6 +167,7 @@ class AddPost extends Component {
                             <div className={classes.textField}>
                                 <ChipInput
                                     label="Tags"
+                                    variant={"outlined"}
                                     value={this.state.tags}
                                     onAdd={(tag) => this.handleAddTag(tag)}
                                     onDelete={(tag, index) => this.handleDeleteTag(tag, index)}
