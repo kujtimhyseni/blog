@@ -18,7 +18,7 @@ class AddPost extends Component {
 
         this.state = {
             id: null,
-            email: "",
+            username: "",
             password: "",
             title: "",
             content: "",
@@ -122,9 +122,9 @@ class AddPost extends Component {
 
                                 <TextField 
                                     required id="standard-required" 
-                                    label="Email" 
-                                    value={this.state.email}
-                                    onChange={this.onChangeEmail}
+                                    label="Username"
+                                    value={this.state.username}
+                                    onChange={this.onChangeUsername}
                                 />
                         
                                 <br/>
