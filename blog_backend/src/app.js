@@ -7,6 +7,10 @@ const swaggerFile = require('./../swagger_output.json')
 const {StatusCodes} = require('http-status-codes');
 const sqlite3 = require('sqlite3');
 const {open} = require('sqlite');
+const $rdf = require('rdflib')
+const {Namespace} = require("rdflib");
+
+var store = $rdf.graph()
 
 const HOSTNAME = '127.0.0.1'
 const PORT = 3000
@@ -181,5 +185,143 @@ app.post("/create_blog", async function (req, res) {
     } catch (e) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: e.message})
     }
+
+});
+
+
+
+//// RDF and SPARQL
+
+
+async function getFirstBlogFromDB() {
+    const query = `SELECT B.id,
+                          title,
+                          content,
+                          creation_date,
+                          author,
+                          visitor_count,
+                          (SELECT GROUP_CONCAT(BlogTags.tag_name)
+                           from BlogTags
+                           where BlogTags.blog_id = B.id) as tags
+                   from BlogTags t
+                            inner join Blog B on t.blog_id = B.id
+                   ORDER BY B.id ASC LIMIT 1`
+    return (await blogDb.all(query))[0];
+}
+
+app.get("/rdf",  async function (req, res) {
+
+    var RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+    var BLG = Namespace("http://www.example.org/2021/BLG#")  // fictional blog vocabulary. //todo
+
+    var rdfInstanceOF = RDF('instanceOf');
+    var rdfContains = RDF('contains');
+
+    //Input general data about blog
+    var blogApp = $rdf.sym(`${BLG().value}BlogApp`);
+    store.add(blogApp, rdfInstanceOF, "Website")
+
+    store.add(blogApp,rdfContains,"PopularTags")
+    store.add(blogApp,rdfContains,"blogs")
+
+    console.log("SPARQL query #1 --START-- Show me what type of instance is BlogApp")
+    result = store.querySync(
+        $rdf.SPARQLToQuery(
+            `SELECT ?o WHERE { ${blogApp} ${rdfInstanceOF} ?o.}`
+            , false, store
+        )
+    )
+    console.log(result);
+    console.log("SPARQL query #1 ---------- END")
+/// ------------------------------------------------------------------------
+
+    console.log("SPARQL query #2 --START--  show me what does BlogApp contain")
+
+    result = store.querySync(
+        $rdf.SPARQLToQuery(
+            `SELECT ?o WHERE { ${blogApp} ${rdfContains} ?o.}`,
+            false, store
+        )
+    )
+    console.log(result);
+    console.log("SPARQL query #2 ---------- END")
+/// ------------------------------------------------------------------------
+
+    //Input some data about a specific blog
+    const blog = await getFirstBlogFromDB();
+    var firstBlog = $rdf.sym(`${BLG().value}BLG1`);
+    console.log(blog)
+    var blgHasID = BLG("hasID")
+    var blgHasTitle = BLG("hasTitle")
+    var blgHasAuthor= BLG("hasAuthor")
+    var blgHasVisitors = BLG("hasVisitors")
+
+    store.add(firstBlog, blgHasID, blog.id)
+    store.add(firstBlog, blgHasTitle, blog.title)
+    store.add(firstBlog, blgHasAuthor, blog.author)
+    store.add(firstBlog, blgHasVisitors, blog.visitor_count)
+
+
+    console.log("SPARQL query #3 --START-- show me the ID of the blog")
+    result = store.querySync(
+        $rdf.SPARQLToQuery(
+            `SELECT ?o WHERE { ${firstBlog} ${blgHasID} ?o.}`
+            , false, store
+        )
+    )
+    console.log(result);
+    console.log("SPARQL query #3 ---------- END")
+/// ------------------------------------------------------------------------
+
+
+    console.log("SPARQL query #4 --START-- show me the title of the blog")
+
+    result = store.querySync(
+        $rdf.SPARQLToQuery(
+            `SELECT ?o WHERE { ${firstBlog} ${blgHasTitle} ?o.}`
+            , false, store
+        )
+    )
+    console.log(result);
+    console.log("SPARQL query #4 ---------- END")
+/// ------------------------------------------------------------------------
+
+
+    console.log("SPARQL query #5 --START-- show me the title of the blog")
+
+    result = store.querySync(
+        $rdf.SPARQLToQuery(
+            `SELECT ?o WHERE { ${firstBlog} ${blgHasAuthor} ?o.}`
+            , false, store
+        )
+    )
+    console.log(result);
+    console.log("SPARQL query #5 ---------- END")
+/// ------------------------------------------------------------------------
+
+/// ------------------------------------------------------------------------
+
+
+    /// SPARQL query #5....
+    console.log("SPARQL query #6 --START -- show me the title of the blog")
+
+    result = store.querySync(
+        $rdf.SPARQLToQuery(
+            `SELECT ?o WHERE {
+                ${firstBlog} ${blgHasVisitors} ?o. 
+             }`
+            , false, store
+        )
+    )
+    console.log(result);
+    console.log("SPARQL query #6 ---------- END")
+/// ------------------------------------------------------------------------
+
+    //Serialize RDF store
+    $rdf.serialize(null, store, 'https://example.com', 'application/rdf+xml', function(err, str) {
+        console.log(str);
+        res.send(str);
+
+    });
 
 });

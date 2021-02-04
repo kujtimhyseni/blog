@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "http-status-codes": "^2.1.4",
+    "rdflib": "^2.1.7",
     "sqlite": "^4.0.19",
     "sqlite3": "^5.0.1",
     "swagger-autogen": "^2.3.4",
