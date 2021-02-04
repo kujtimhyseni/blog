@@ -121,7 +121,7 @@ class PostsList extends Component {
                     </Grid>
                     <Grid item md={5}><div style={{overflowY: "scroll", borderRight: " 0.5px solid black"}}> {this.renderPostItems()} </div> </Grid>
                     <Grid item md={7}>
-                        <div style={{marginLeft: "20px"}}>
+                        <div style={{marginLeft: "20px", marginDown: "20px"}}>
                             {this.renderSingleBlog()}
                         </div>
                     </Grid>
@@ -136,6 +136,7 @@ class PostsList extends Component {
 
         return (
             <React.Fragment>
+                <div className={classes.searchBarDiv}>
                 <TextField
                     label="Search by tag"
                     value={searchTag}
@@ -143,11 +144,13 @@ class PostsList extends Component {
                 />
                 <Button
                     size="small"
-                    variant="outlined"
-                    className={classes.textField}
+                    variant="contained"
+                    color="primary"
+                    className={classes.searchButton}
                     onClick={this.retrievePosts}>
                     Search
                 </Button>
+                </div>
             </React.Fragment>)
     }
 

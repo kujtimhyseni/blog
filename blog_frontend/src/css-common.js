@@ -39,16 +39,25 @@ export const styles = (theme) => ({
         textDecoration: "unset"
     },
     form: {
-         marginLeft: "0px"
+         marginLeft: "0px",
+         background: "linear-gradient(to right bottom, #FFFFFF, #D0D0D0)",
+         height: "100%"
     },
+    border: {
+        marginLeft: "10px",
+        border: "2px gray",
+      
+        
+   },
     textField: {
-        margin: "15px 0"
+        margin: "15px",
+        width : "800px",
     },
     search: {
-        marginTop: "15px"
+        marginTop: "15px",
     },
     detail: {
-        margin: "5px 0"
+        marginRight: "5px 0"
     },
     edit: {
         backgroundColor: "orange",
@@ -104,11 +113,40 @@ export const styles = (theme) => ({
     BlogComment:{
         padding:"10px",
         border: "1px solid black",
-        paddingBottom: "14px"
+        paddingBottom: "14px",
     },
     AddComment:{
         padding:"10px",
         border: "1px solid grey",
-        paddingBottom: "14px"
-    }
+        paddingBottom: "14px",
+        marginTop:"100px",
+        marginRight:"20px"
+    },
+    red: {
+        color: "red",
+        marginLeft: "15px",
+    },
+    submitButton: {
+        marginTop: "15px",
+        color: "primary",
+        fontSize: "13px",
+        textTransform: "none",
+        height: "25px",
+        width: "880px"
+    },
+    searchButton: {
+        margin: "15px",
+        color: "primary",
+        fontSize: "15px",
+        textTransform: "none",
+    },
+    searchBarDiv: {
+        margin: "0px",
+        backgroundColor: "#FBFBF9"
+    },
+    sidebar: {
+        margin: "0px",
+        backgroundColor: "#F4E2FC",
+        minHeight: "100%"
+    },
 });

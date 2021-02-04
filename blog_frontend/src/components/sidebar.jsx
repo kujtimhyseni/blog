@@ -26,7 +26,8 @@ class Sidebar extends Component {
     render() {
         const { classes } = this.props
         return (
-            <React.Fragment>
+            <React.Fragment >
+                <div className={classes.sidebar}>
                 <h2 className={classes.name} >Popular tags</h2>
                 <Grid item>
                     {this.state.tags.map(tag =>
@@ -35,6 +36,7 @@ class Sidebar extends Component {
                             {/*<div className={classes.detail}></div>*/}
                         </ListItem>)}
                 </Grid>
+                </div>
             </React.Fragment>
         )
     };

@@ -101,7 +101,8 @@ class AddComment extends Component {
                 <Button
                     size="small"
                     variant="outlined"
-                    className={classes.textField}
+                    color="primary"
+                    className={classes.submitButton}
                     onClick={this.onSubmitClicked}>
                     Submit comment
                 </Button>

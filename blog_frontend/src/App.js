@@ -7,6 +7,7 @@ import AddPost from "./components/add-post.component";
 import Post from "./components/post.component";
 import PostsList from "./components/posts-list.component";
 import Sidebar from "./components/sidebar";
+import Login from "./components/login.component";
 
 import { AppBar, Toolbar, Typography, withStyles,Drawer } from '@material-ui/core';
 
@@ -32,6 +33,11 @@ class App extends Component {
                 Add Post
             </Typography>
             </Link>
+            <Link to={"/login"} className={classes.link}>
+              <Typography variant="body2">
+                Log In
+            </Typography>
+            </Link>
           </Toolbar>
         </AppBar>
         <Drawer
@@ -50,6 +56,7 @@ class App extends Component {
             <Route exact path={["/", "/posts"]} component={PostsList} /> 
             <Route exact path="/add" component={AddPost} />
             <Route path="/posts/:id" component={Post} />
+            <Route path="/login" component={Login} />
           </Switch>
         </main>
       </div>

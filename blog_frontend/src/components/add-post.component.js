@@ -103,7 +103,7 @@ class AddPost extends Component {
         return (
             <React.Fragment>
                 {this.state.submitted ? (
-                    <div className={classes.form}>
+                    <div className={classes.form} >
                         <h4>You submitted successfully!</h4>
                         <Button
                             size="small"
@@ -115,46 +115,48 @@ class AddPost extends Component {
                     </div>
                 ) : (
                         <div className={classes.form}>
+                        <div className={classes.border}>
+                            <h4 className={classes.border}>Log in</h4> 
+                            {this.state.login_success ? (<div></div>) : (<div> <h4 className={classes.red}> Unauthorized!</h4> </div>)}
 
-                        <h4>Log in</h4> 
-                        {this.state.login_success ? (<div></div>) : (<div> <h4 className={classes.red}> Unauthorized!</h4> </div>)}
-
-                            <TextField 
-                                required id="standard-required" 
-                                label="Email" 
-                                value={this.state.email}
-                                onChange={this.onChangeEmail}
-                            />
-                        
-                            <br/>
-                            <TextField 
-                                required id="standard-required" 
-                                label="Password" 
-                                type="password"
-                                value={this.state.password}
-                                onChange={this.onChangePassword}
-                            />
-                            <br/>
-                            <br/>
-
-                            <h4>Create Post</h4> 
-                            <div className={classes.textField}>
-                                <TextField
-                                    label="Title"
-                                    name="title"
-                                    value={this.state.title}
-                                    onChange={this.onChangeTitle}
-                                    required
+                                <TextField 
+                                    required id="standard-required" 
+                                    label="Email" 
+                                    value={this.state.email}
+                                    onChange={this.onChangeEmail}
                                 />
-                            </div>
+                        
+                                <br/>
+                                    <TextField 
+                                    required id="standard-required" 
+                                    label="Password" 
+                                    type="password"
+                                    value={this.state.password}
+                                    onChange={this.onChangePassword}
+                                />
+                                <br/>
+                                <br/>
+                                </div>
+                                    <h4 className={classes.border}>Create Post</h4> 
+                                <div className={classes.textField}>
+                                    <TextField
+                                        label="Title"
+                                        name="title"
+                                        fullWidth="true"
+                                        value={this.state.title}
+                                        onChange={this.onChangeTitle}
+                                        required
+                                    />
+                                </div>
 
-                            <div className={classes.textField}>
+                            <div className={classes.textField} >
                                 <TextField
                                     label="Content"
                                     name="content"
                                     multiline
                                     rows={6}
                                     variant="outlined"
+                                    fullWidth="true"
                                     value={this.state.content}
                                     onChange={this.onChangeContent}
                                     required
@@ -169,15 +171,19 @@ class AddPost extends Component {
                                     onDelete={(tag, index) => this.handleDeleteTag(tag, index)}
                                     required
                                 />
-                            </div>
-
+                            <br/>
+                            <br/>
                             <Button
+                                marginLeft="15px"
                                 size="small"
                                 color="primary"
                                 variant="contained"
                                 onClick={this.savePost}>
                                 Save
                             </Button>
+                            </div>
+
+
                         </div>
                     )}
             </React.Fragment>
