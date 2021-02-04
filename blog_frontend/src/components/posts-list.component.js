@@ -184,7 +184,7 @@ class PostsList extends Component {
                     {currentPost.title}
                 </h1>
                 <br/>  <br/>  <br/>
-                <div className={classes.detail} style={{textAlign:"center"}}>
+                <div className={classes.detail} style={{whiteSpace:"pre-wrap"}}>
                     {currentPost.content}
                 </div>
                 <br/>  <br/>
