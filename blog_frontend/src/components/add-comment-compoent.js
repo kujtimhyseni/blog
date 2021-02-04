@@ -100,7 +100,7 @@ class AddComment extends Component {
                 <br/>
                 <Button
                     size="small"
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
                     className={classes.submitButton}
                     onClick={this.onSubmitClicked}>
