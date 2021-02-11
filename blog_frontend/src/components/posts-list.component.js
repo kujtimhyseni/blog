@@ -5,6 +5,7 @@ import ShowComment from "../components/view-comment-compoent";
 import {styles} from "../css-common"
 import {Button, Grid, TextField, ListItem, withStyles} from "@material-ui/core";
 import AddComment from "./add-comment-compoent";
+import $ from "jquery";
 
 class PostsList extends Component {
 
@@ -50,6 +51,17 @@ class PostsList extends Component {
 
     componentDidMount() {
         this.retrievePosts();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        $(".blog_details").on({
+            mouseenter: function () {
+                $(".blog_details").css("color", "darkolivegreen")
+            },
+            mouseleave: function () {
+                $(".blog_details").css("color", "black")
+            }
+        });
     }
 
     onChangeSearchTag(e) {
@@ -188,9 +200,9 @@ class PostsList extends Component {
                     {currentPost.content}
                 </div>
                 <br/>  <br/>
-                <h4>Visits: {visitor_count}</h4>
+                <h4 className="blog_details">Visits: {visitor_count}</h4>
 
-                <h4>Tags: {currentPost.tags.join(", ")}</h4> <br/>
+                <h4 className="blog_details">Tags: {currentPost.tags.join(", ")}</h4> <br/>
                 <div>
                     {currentPost.comments.map(comment =>
                         <ShowComment key={comment.id} comment={comment} />
